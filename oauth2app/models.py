@@ -10,6 +10,7 @@ from uuid import uuid4
 from django.db import models
 from django.contrib.auth.models import User
 from .consts import CLIENT_KEY_LENGTH, CLIENT_SECRET_LENGTH
+from .consts import SCOPE_LENGTH
 from .consts import ACCESS_TOKEN_LENGTH, REFRESH_TOKEN_LENGTH
 from .consts import ACCESS_TOKEN_EXPIRATION, MAC_KEY_LENGTH, REFRESHABLE
 from .consts import CODE_KEY_LENGTH, CODE_EXPIRATION
@@ -81,7 +82,7 @@ class Client(models.Model):
         unique=True,
         max_length=CLIENT_SECRET_LENGTH,
         default=KeyGenerator(CLIENT_SECRET_LENGTH))
-    redirect_uri = models.URLField(null=True)
+    redirect_uri = models.URLField(max_length=1024,null=True)
 
 
 class AccessRange(models.Model):
@@ -98,7 +99,7 @@ class AccessRange(models.Model):
       *Default None*
 
     """
-    key = models.CharField(unique=True, max_length=255, db_index=True)
+    key = models.CharField(unique=True, max_length=SCOPE_LENGTH, db_index=True)
     description = models.TextField(blank=True)
 
 
@@ -184,7 +185,7 @@ class Code(models.Model):
         default=TimestampGenerator())
     expire = models.PositiveIntegerField(
         default=TimestampGenerator(CODE_EXPIRATION))
-    redirect_uri = models.URLField(null=True)
+    redirect_uri = models.URLField(max_length=1024,null=True)
     scope = models.ManyToManyField(AccessRange)
 
 

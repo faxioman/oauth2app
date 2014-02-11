@@ -4,10 +4,10 @@
 """OAuth 2.0 Authentication"""
 
 
-from hashlib import sha256
-from urlparse import parse_qsl
 try: import simplejson as json
 except ImportError: import json
+from hashlib import sha256
+from urlparse import parse_qsl
 from django.conf import settings
 from django.http import HttpResponse
 from .exceptions import OAuth2Exception
@@ -120,7 +120,6 @@ class Authenticator(object):
             self.attempted_validation = True
             self._validate_bearer(self.bearer_token)
             self.valid = True
-            return
         else:
             raise InvalidRequest("Request authentication failed, no "
                 "authentication credentials provided.")
