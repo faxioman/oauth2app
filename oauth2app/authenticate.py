@@ -258,16 +258,16 @@ class Authenticator(object):
             if isinstance(self.error, InsufficientScope):
                 header.append('scope=%s' % ' '.join(self.authorized_scope))
                 response.status_code = 403
-                response.reason_phrase = 'Forbidden'
+                response.reason_phrase = 'FORBIDDEN'
             elif isinstance(self.error, InvalidToken):
                 response.status_code = 401
-                response.reason_phrase = 'Unauthorized'
+                response.reason_phrase = 'UNAUTHORIZED'
             elif isinstance(self.error, InvalidRequest):
                 response.status_code = 400
-                response.reason_phrase = 'Bad Request'
+                response.reason_phrase = 'BAD REQUEST'
             else:
                 response.status_code = 401
-                response.reason_phrase = 'Unauthorized'
+                response.reason_phrase = 'UNAUTHORIZED'
             response['WWW-Authenticate'] = ', '.join(header)
             return response
 
