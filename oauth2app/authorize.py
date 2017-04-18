@@ -8,10 +8,6 @@ from django.http import HttpResponseRedirect
 try: import simplejson as json
 except ImportError: import json
 from django.http import HttpResponseRedirect
-try:
-    from django.http.request import absolute_http_url_re  # Django 1.5+
-except ImportError:
-    from django.http import absolute_http_url_re
 from urllib import urlencode
 from .consts import ACCESS_TOKEN_EXPIRATION, REFRESHABLE
 from .consts import CODE, TOKEN, CODE_AND_TOKEN
@@ -19,6 +15,7 @@ from .consts import AUTHENTICATION_METHOD, MAC, BEARER, MAC_KEY_LENGTH
 from .exceptions import OAuth2Exception
 from .lib.uri import add_parameters, add_fragments, normalize
 from .models import Client, AccessRange, Code, AccessToken, KeyGenerator
+from urlparse import urlparse
 
 
 class AuthorizationException(OAuth2Exception):
@@ -201,7 +198,7 @@ class Authorizer(object):
         if self.authorized_response_type & RESPONSE_TYPES[self.response_type] == 0:
             raise UnauthorizedClient("Response type %s not allowed." %
                 self.response_type)
-        if not absolute_http_url_re.match(self.redirect_uri):
+        if not urlparse(self.redirect_uri).scheme:
             raise InvalidRequest('Absolute URI required for redirect_uri')
         # Scope
         if self.authorized_scope is not None and self.scope is None:
@@ -222,7 +219,7 @@ class Authorizer(object):
         """Raise MissingRedirectURI if no redirect_uri is available."""
         if self.redirect_uri is None:
             raise MissingRedirectURI('No redirect_uri to send response.')
-        if not absolute_http_url_re.match(self.redirect_uri):
+        if not urlparse(self.redirect_uri).scheme:
             raise MissingRedirectURI('Absolute redirect_uri required.')
 
     def error_redirect(self):
