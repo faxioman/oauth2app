@@ -4,10 +4,9 @@
 """OAuth 2.0 Authorization"""
 
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 try: import simplejson as json
 except ImportError: import json
-from django.http import HttpResponseRedirect
 from urllib import urlencode
 from .consts import ACCESS_TOKEN_EXPIRATION, REFRESHABLE
 from .consts import CODE, TOKEN, CODE_AND_TOKEN
@@ -242,7 +241,10 @@ class Authorizer(object):
             redirect_uri = add_parameters(redirect_uri, parameters)
         if self.authorized_response_type & TOKEN != 0:
             redirect_uri = add_fragments(redirect_uri, parameters)
-        return HttpResponseRedirect(redirect_uri)
+
+        response = HttpResponse("", status=302)
+        response['Location'] = redirect_uri
+        return response
 
     def _query_string(self):
         """Returns the a url encoded query string useful for resending request
@@ -316,7 +318,10 @@ class Authorizer(object):
                 parameters['state'] = self.state
             redirect_uri = add_parameters(self.redirect_uri, parameters)
             redirect_uri = add_fragments(redirect_uri, fragments)
-            return HttpResponseRedirect(redirect_uri)
+
+            response = HttpResponse("", status=302)
+            response['Location'] = redirect_uri
+            return response
         else:
             raise UnauthenticatedUser("Django user object associated with the "
                 "request is not authenticated.")
