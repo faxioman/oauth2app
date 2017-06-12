@@ -15,6 +15,7 @@ from .consts import ACCESS_TOKEN_LENGTH, REFRESH_TOKEN_LENGTH
 from .consts import ACCESS_TOKEN_EXPIRATION, MAC_KEY_LENGTH, REFRESHABLE
 from .consts import CODE_KEY_LENGTH, CODE_EXPIRATION
 from .managers import AccessTokenManager
+import jwt
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
@@ -158,6 +159,23 @@ class AccessToken(models.Model):
     refreshable = models.BooleanField(default=REFRESHABLE)
 
     objects = AccessTokenManager()
+
+    def generate_token(self):
+        if hasattr(settings, 'OAUTH2_USE_JWT_TOKEN') and settings.OAUTH2_USE_JWT_TOKEN:
+            payload = {
+                "iss": settings.OAUTH2_JWT_ISSUER,
+                "sub": str(self.user.pk),
+                "aud": settings.OAUTH2_JWT_AUDIENCE,
+                "iat": self.issue,
+                "exp": self.expire,
+                "scope": " ".join(x.key for x in self.scope.all())
+            }
+
+            # claims <-> user fields mapping
+            for (claim, field) in settings.OAUTH2_JWT_CLAIMS_USER_MAPPING.iteritems():
+                payload[claim] = getattr(self.user, field)
+
+            self.token = jwt.encode(payload, settings.OAUTH2_JWT_KEY, algorithm='HS256')
 
 
 class Code(models.Model):
