@@ -113,3 +113,13 @@ LOGGING = {
 #     'oauth2app.models',
 #     'oauth2app.token',
 #     'oauth2app.lib.uri',)
+
+OAUTH2_USE_JWT_TOKEN = True
+OAUTH2_JWT_KEY = "hJtXIZ2uSN5kbQfbtTNWbpdmhkV8FJG-Onbc6mxCcYg"
+OAUTH2_JWT_ISSUER = 'urn:oauth2app'
+OAUTH2_JWT_AUDIENCE = 'urn:oauth2app'
+OAUTH2_JWT_CLAIMS_USER_MAPPING = {
+    'email': 'email',
+    'given_name': 'first_name',
+    'family_name': 'last_name'
+}

@@ -297,9 +297,9 @@ class Authorizer(object):
                 parameters['code'] = code.key
             if RESPONSE_TYPES[self.response_type] & TOKEN != 0:
                 access_token = AccessToken.objects.create(
+                    access_ranges,
                     user=self.user,
                     client=self.client)
-                access_token.scope = access_ranges
                 fragments['access_token'] = access_token.token
                 if access_token.refreshable:
                     fragments['refresh_token'] = access_token.refresh_token

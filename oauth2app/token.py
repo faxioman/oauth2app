@@ -367,28 +367,28 @@ class TokenGenerator(object):
 
     def _get_authorization_code_token(self):
         """Generate an access token after authorization_code authorization."""
+        access_ranges = AccessRange.objects.filter(key__in=self.scope) if self.scope else []
         access_token = AccessToken.objects.create(
+            access_ranges,
             user=self.code.user,
             client=self.client,
             refreshable=self.refreshable)
         if self.authentication_method == MAC:
             access_token.mac_key = KeyGenerator(MAC_KEY_LENGTH)()
-        access_ranges = AccessRange.objects.filter(key__in=self.scope) if self.scope else []
-        access_token.scope = access_ranges
         access_token.save()
         self.code.delete()
         return access_token
 
     def _get_password_token(self):
         """Generate an access token after password authorization."""
+        access_ranges = AccessRange.objects.filter(key__in=self.scope) if self.scope else []
         access_token = AccessToken.objects.create(
+            access_ranges,
             user=self.user,
             client=self.client,
             refreshable=self.refreshable)
         if self.authentication_method == MAC:
             access_token.mac_key = KeyGenerator(MAC_KEY_LENGTH)()
-        access_ranges = AccessRange.objects.filter(key__in=self.scope) if self.scope else []
-        access_token.scope = access_ranges
         access_token.save()
         return access_token
 
@@ -406,13 +406,13 @@ class TokenGenerator(object):
 
     def _get_client_credentials_token(self):
         """Generate an access token after client_credentials authorization."""
+        access_ranges = AccessRange.objects.filter(key__in=self.scope) if self.scope else []
         access_token = AccessToken.objects.create(
+            access_ranges,
             user=self.client.user,
             client=self.client,
             refreshable=self.refreshable)
         if self.authentication_method == MAC:
             access_token.mac_key = KeyGenerator(MAC_KEY_LENGTH)()
-        access_ranges = AccessRange.objects.filter(key__in=self.scope) if self.scope else []
-        access_token.scope = access_ranges
         access_token.save()
         return access_token

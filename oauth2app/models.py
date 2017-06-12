@@ -14,6 +14,7 @@ from .consts import SCOPE_LENGTH
 from .consts import ACCESS_TOKEN_LENGTH, REFRESH_TOKEN_LENGTH
 from .consts import ACCESS_TOKEN_EXPIRATION, MAC_KEY_LENGTH, REFRESHABLE
 from .consts import CODE_KEY_LENGTH, CODE_EXPIRATION
+from .managers import AccessTokenManager
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
@@ -155,6 +156,8 @@ class AccessToken(models.Model):
         default=TimestampGenerator(ACCESS_TOKEN_EXPIRATION))
     scope = models.ManyToManyField(AccessRange)
     refreshable = models.BooleanField(default=REFRESHABLE)
+
+    objects = AccessTokenManager()
 
 
 class Code(models.Model):
