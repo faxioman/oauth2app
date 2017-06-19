@@ -168,6 +168,7 @@ class AccessToken(models.Model):
                 "aud": settings.OAUTH2_JWT_AUDIENCE,
                 "iat": self.issue,
                 "exp": self.expire,
+                "jti": str(self.pk),
                 "scope": " ".join(x.key for x in self.scope.all())
             }
 
